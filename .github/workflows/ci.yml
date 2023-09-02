@@ -1,0 +1,15 @@
+name: Nodejs Image CI
+
+on:
+  push
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and push nodejs docker image
+        run: |
+          docker login -u ankur1812 -p ${{ secrets.GHCR_ACCESS_TOKEN }} ghcr.io
+          docker build . --tag ghcr.io/ankur1812/nodejs-test-image:latest
+          docker push ghcr.io/ankur1812/nodejs-test-image:latest
