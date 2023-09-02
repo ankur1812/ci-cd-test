@@ -11,5 +11,5 @@ jobs:
       - name: Build and push nodejs docker image
         run: |
           docker login -u ankur1812 -p ${{ secrets.GHCR_ACCESS_TOKEN }} ghcr.io
-          docker build . --tag ghcr.io/ankur1812/nodejs-test-image:latest
+          docker build . -f dockerfile --tag ghcr.io/ankur1812/nodejs-test-image:latest
           docker push ghcr.io/ankur1812/nodejs-test-image:latest
