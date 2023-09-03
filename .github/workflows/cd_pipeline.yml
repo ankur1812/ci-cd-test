@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  build_and_publish:
+  build:
     runs-on: self-hosted
     steps:
       - name: Login to ghcr.io
