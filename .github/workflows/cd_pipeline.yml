@@ -10,10 +10,16 @@ jobs:
   build_and_publish:
     runs-on: self-hosted
     steps:
-      - name: Pull dockerimagge from ghcr.io
-        run: |
-          docker login -u ankur1812 -p ${{ secrets.GHCR_ACCESS_TOKEN }} ghcr.io
-          sudo docker pull ghcr.io/ankur1812/nodejs-test-image:latest
-          docker rm -f /nodejs-test-image-container || true
-          docker run -d  -p 3000:3000 --name nodejs-test-image-container nodejs-test-image
+      - name: Login to ghcr.io
+        run: docker login -u ankur1812 -p ${{ secrets.GHCR_ACCESS_TOKEN }} ghcr.io
+      - name: Pull docker image
+        run: sudo docker pull ghcr.io/ankur1812/nodejs-test-image:latest
+      - name: Remove old container
+        run: docker rm -f /nodejs-test-image-container || true
+      - name: Run latest image in new container
+        run: docker run -d  -p 3000:3000 --name nodejs-test-image-container nodejs-test-image
+          
+          
+          
+          
           
