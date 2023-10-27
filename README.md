@@ -110,6 +110,7 @@ You can check the PORTs and use the curl command to confirm it's running
 The NginX server will now be configured with the reverse proxy mapped to the docker containers IP address.
 
 ##### 7.1 Get the IP address of the container.
+**This step isn't needed if porn mapping was done in deployment YAML ** (` Run latest image in new container > sudo docker run -d  -p 3000:3000`)
 
 - Get the container ID using the `docker ps` command (same command as in step 6)
 - Run the docker inspect command with the CONTAINER_ID to get it's IP Address
@@ -133,13 +134,14 @@ Check the location config inside the default file and udpate it with the IP Addr
                 # Update the proxy_pass as
                 # proxy_pass http://[IP_ADDRESS]:[PORT];
 
-                proxy_pass http://172.17.0.2:3000;
+                proxy_pass http://localhost:3000; # http://172.17.0.2:3000 if fetching the docker container IP_ADDRESS from step 7.1
 
                 # -----------
+                ## Below code can be deleted. Can cause errors for ui/backened servers.
 
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
-                try_files $uri $uri/ =404;
+                # try_files $uri $uri/ =404; ## NOT REQUIRED
         }
 ```
 
@@ -154,4 +156,4 @@ Get the Public IPv4 address / DNS from the EC2 Details page and open in the link
 
 
 ### 8. Your server is LIVE.
-Your web/app server is now live. You can not proceed to adding certificates or ingress/exgress configurations.
+Your web/app server is now live. You can now proceed to adding certificates or ingress/exgress configurations.
