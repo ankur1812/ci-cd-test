@@ -26,9 +26,11 @@ A VM can easily be provisioned through Amazon Web Services. Amazon Elastic Compu
 Once the EC2 instance is provisioned, you can connect to it either using the key-pair used in the last step, or directly using EC2 Instance Connect feature of AWS. This would login you to the instance and you access its shell environment.
 
 ##### 3.1 Update the core apt and apt-get packages
-  `sudo su `
-  `sudo apt update`
-  `sudo apt-get upgrade -y`
+  ```
+  sudo su
+  sudo apt update
+  sudo apt-get upgrade -y
+```
 
 ##### 3.2 Install Docker and NginX
 
@@ -37,8 +39,9 @@ Docker would be used to run the docker builds (published to the container reposi
 Steps to install docker can be found in its official website. [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
 
 NginX is required for the reverse proxy of the dockerized environment mapped to the default 80 port of the EC2 instance.
-`sudo apt install nginx`
-
+```
+sudo apt install nginx
+```
 
 #### 4. Add the EC2 instace to the github project runners.
 The EC2 instance needs to added as a runner to the github project actions. This runner would pick up the triggered deployment workflow once the build workflow is finihsed (after every commit/merge) and the latest docker image is pushed to the container registry.
@@ -110,7 +113,7 @@ You can check the PORTs and use the curl command to confirm it's running
 The NginX server will now be configured with the reverse proxy mapped to the docker containers IP address.
 
 ##### 7.1 Get the IP address of the container.
-**This step isn't needed if porn mapping was done in deployment YAML ** (` Run latest image in new container > sudo docker run -d  -p 3000:3000`)
+**This step isn't needed if port mapping was done in deployment YAML** (` Run latest image in new container > sudo docker run -d  -p 3000:3000`)
 
 - Get the container ID using the `docker ps` command (same command as in step 6)
 - Run the docker inspect command with the CONTAINER_ID to get it's IP Address
@@ -130,14 +133,15 @@ Check the location config inside the default file and udpate it with the IP Addr
 
         location / {
 
-                # -----------
+                # ---------------------------------
                 # Update the proxy_pass as
                 # proxy_pass http://[IP_ADDRESS]:[PORT];
-
+                # ---------------------------------
                 proxy_pass http://localhost:3000; # http://172.17.0.2:3000 if fetching the docker container IP_ADDRESS from step 7.1
 
-                # -----------
-                ## Below code can be deleted. Can cause errors for ui/backened servers.
+                # ---------------------------------
+                # Below code can be deleted. Can cause errors for ui/backened servers.
+                # ---------------------------------
 
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
