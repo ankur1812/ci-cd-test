@@ -27,7 +27,7 @@ Once the EC2 instance is provisioned, you can connect to it either using the key
 
 ##### 3.1 Update the core apt and apt-get packages
   ```
-  sudo su
+  # sudo su
   sudo apt update
   sudo apt-get upgrade -y
 ```
@@ -37,15 +37,19 @@ Once the EC2 instance is provisioned, you can connect to it either using the key
 Docker would be used to run the docker builds (published to the container repository in the build pipline from step 1) inside an docker containers.
 
 Steps to install docker can be found in its official website. [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
+Once installed. Test if docker is installed in your instance:
+```
+sudo docker run hello-world
+```
 
 NginX is required for the reverse proxy of the dockerized environment mapped to the default 80 port of the EC2 instance.
 ```
 sudo apt install nginx
 ```
 
-#### 3.3 Exit sudo mode
+#### 3.3 Exit sudo mode (Optional, only if in sudo)
 
-Adding the EC2 instance in the next steps must not be in sudo mode. Exit it before proceeding to next step.
+If you're in sudo mode, exit it before proceeding to next step. Adding the EC2 instance in the next steps must not be in sudo mode.
 ```
 exit
 ```
@@ -97,7 +101,8 @@ jobs:
 Commit/push the new changes. This would trigger the build pipeline and then the deployment pipeline (added in current step).
 
 Note: 
-- The docker login step uses the same `GITHUB_ACCESS_TOKEN` generated earlier for the buidl pipeline.
+- You can also add **env tags** to your runner. E.g. `dev`, `staging`, etc. Then you can updated the `jobs.build.runs-on` to run on exact environment e.g `runs-on: [self-hosted, dev]`
+- The docker login step uses the same `GITHUB_ACCESS_TOKEN` generated earlier for the build pipeline.
 - The nodejs server used in this project uses port 3000. `sudo docker run` command in last step is using the same port mappings. This `-p 3000:3000` port mapping would change as per your project.
 
 #### 6. Verify the deployment workflow
@@ -154,6 +159,11 @@ Check the location config inside the default file and udpate it with the IP Addr
                 # as directory, then fall back to displaying a 404.
                 # try_files $uri $uri/ =404; ## NOT REQUIRED
         }
+```
+
+You can just add the proxy_pass in the existing location block on your config (and comment out `try_files $uri $uri/ =404;`)
+```
+proxy_pass http://localhost:3000; # http://172.17.0.2:3000 if fetching the docker container IP_ADDRESS from step 7.1
 ```
 
 After updating the `default` file, restart the nginx server.
