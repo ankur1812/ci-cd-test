@@ -2,13 +2,14 @@
 
 Setup for building Github Container Deployment for AWS
 
-#### 1. Setup the build pipeline
+### 1. Setup the build pipeline
 
 This deployment pipeline triggers the workflow on a self-hosted AWS Server. The runner would require a docker image, published on a container registry (ghcr.io), which would be pulled and run in a docker container inside the AWS instance.
 
 Steps for the build pipeline is available in  [CI/CD Build Pipeline](https://github.com/ankur1812/cicd-build-pipeline) project.
 
-#### 2.Setup AWS EC2 instace
+
+### 2.Setup AWS EC2 instace
 
 A VM can easily be provisioned through Amazon Web Services. Amazon Elastic Compute Cloud (Amazon EC2) provides secure, resizable compute capacity in the cloud.
 
@@ -20,10 +21,12 @@ A VM can easily be provisioned through Amazon Web Services. Amazon Elastic Compu
   - Key-pair/login info (Either create a new one or select existing)
   - N/W Settings (Select both allow HTTP/HTTPS traffic)
 - Launch Instance
+- 
 
-#### 3. Login to EC2 Instance, update packages
+### 3. Login to EC2 Instance, update packages
 
 Once the EC2 instance is provisioned, you can connect to it either using the key-pair used in the last step, or directly using EC2 Instance Connect feature of AWS. This would login you to the instance and you access its shell environment.
+
 
 ##### 3.1 Update the core apt and apt-get packages
   ```
@@ -31,6 +34,7 @@ Once the EC2 instance is provisioned, you can connect to it either using the key
   sudo apt update
   sudo apt-get upgrade -y
 ```
+
 
 ##### 3.2 Install Docker and NginX
 
@@ -47,6 +51,7 @@ NginX is required for the reverse proxy of the dockerized environment mapped to 
 sudo apt install nginx
 ```
 
+
 #### 3.3 Exit sudo mode (Optional, only if in sudo)
 
 If you're in sudo mode, exit it before proceeding to next step. Adding the EC2 instance in the next steps must not be in sudo mode.
@@ -54,7 +59,8 @@ If you're in sudo mode, exit it before proceeding to next step. Adding the EC2 i
 exit
 ```
 
-#### 4. Add the EC2 instace to the github project runners.
+
+### 4. Add the EC2 instace to the github project runners.
 The EC2 instance needs to added as a runner to the github project actions. This runner would pick up the triggered deployment workflow once the build workflow is finihsed (after every commit/merge) and the latest docker image is pushed to the container registry.
 
 Go to `Project Settings` > `Actions` > `Runners` > `New self-hosted runner`
@@ -65,7 +71,8 @@ You will see the setup steps for connecting the runner. Copy & paste each of the
 
 Once completed you would see the runner added to your Project `Actions` tab.
 
-#### 5. Add the runner workflow / deployment pipeline
+
+### 5. Add the runner workflow / deployment pipeline
 
 The deployment pipeline would be triggered after the build workflow. You would add a YAML file to trigger this deployment. The workflow would be exectued on your attached EC2 instance.
 
@@ -105,7 +112,8 @@ Note:
 - The docker login step uses the same `GITHUB_ACCESS_TOKEN` generated earlier for the build pipeline.
 - The nodejs server used in this project uses port 3000. `sudo docker run` command in last step is using the same port mappings. This `-p 3000:3000` port mapping would change as per your project.
 
-#### 6. Verify the deployment workflow
+
+### 6. Verify the deployment workflow
 
 In the EC2 console, run the curl command to test if the docker container was instantiated.
 
@@ -120,7 +128,8 @@ ubuntu@ip-172-31-43-72:~$
 You can check the PORTs and use the curl command to confirm it's running
 `curl 0.0.0.0:3000` will give you the HTML/API response string.
 
-#### 7. Update NginX for adding reverse proxy from the container
+
+### 7. Update NginX for adding reverse proxy from the container
 
 The NginX server will now be configured with the reverse proxy mapped to the docker containers IP address.
 
@@ -137,8 +146,12 @@ ubuntu@ip-172-31-43-72:~$ sudo docker inspect -f  '{{range .NetworkSettings.Netw
 
 ##### 7.2 Update the NginX config with the container's IP Address
 
-- `cd /etc/nginx/sites-available`
-- `vi default`
+```
+cd /etc/nginx/sites-available
+vi default
+```
+OR
+- `sudo vi /etc/nginx/sites-available/default`
 
 Check the location config inside the default file and udpate it with the IP Address
 ```
@@ -174,6 +187,7 @@ Once restarted, the default 80 port with revere-proxy to the docker's IP and ret
 Get the Public IPv4 address / DNS from the EC2 Details page and open in the link. The project would be live!
 
 (Note: HTTP protocol might be needed since certificates are not added. Using the HTTPS protocol might not load the site.)
+
 
 
 ### 8. Your server is LIVE.
