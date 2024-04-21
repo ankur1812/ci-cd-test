@@ -43,6 +43,13 @@ NginX is required for the reverse proxy of the dockerized environment mapped to 
 sudo apt install nginx
 ```
 
+#### 3.3 Exit sudo mode
+
+Adding the EC2 instance in the next steps must not be in sudo mode. Exit it before proceeding to next step.
+```
+exit
+```
+
 #### 4. Add the EC2 instace to the github project runners.
 The EC2 instance needs to added as a runner to the github project actions. This runner would pick up the triggered deployment workflow once the build workflow is finihsed (after every commit/merge) and the latest docker image is pushed to the container registry.
 
@@ -50,7 +57,7 @@ Go to `Project Settings` > `Actions` > `Runners` > `New self-hosted runner`
 
 You will see the setup steps for connecting the runner. Copy & paste each of the shell commands into your EC2 instance and execute them.
 
-Note: For Linux, you can modify the last configuration command `$ ./run.sh` to `$ ./run.sh &` to run it in detached mode. The runner would be connected to your github project even when the EC2 console window is closed.
+**Note: For Linux, you can modify the last configuration command `$ ./run.sh` to `$ ./run.sh &` to run it in detached mode.** The runner would be connected to your github project even when the EC2 console window is closed.
 
 Once completed you would see the runner added to your Project `Actions` tab.
 
